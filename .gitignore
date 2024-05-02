@@ -1,0 +1,2 @@
+# Compiled nvim plugins
+./plugin/packer_compiled.lua
