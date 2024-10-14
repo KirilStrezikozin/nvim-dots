@@ -37,3 +37,6 @@ vim.keymap.set("n", "<leader>sx", ":close<CR>") -- close a split
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 vim.keymap.set("n", "<leader><leader>", "<cmd>source<CR>")
+
+-- invoke lazygit
+vim.keymap.set("n", "lg", "<cmd>LazyGit<CR>", { silent = true })
