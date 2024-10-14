@@ -23,7 +23,7 @@ vim.opt.syntax = "on"
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
 vim.opt.signcolumn = "yes"
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "80,120"
 
 vim.opt.backspace = "indent,eol,start"
 
