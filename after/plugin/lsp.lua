@@ -112,15 +112,9 @@ function Filter_diagnostics(diagnostic)
     --     return true
     -- end
 
-    if diagnostic.message == 'Call expression not allowed in type expression' then
-        return false
-    elseif diagnostic.message == 'Argument of type "List[List[float]] | Tuple[Tuple[float, float, float, float], Tuple[float, float, float, float], Tuple[float, float, float, float], Tuple[float, float, float, float]] | Matrix" cannot be assigned to parameter "operands" of type "_ArrayLikeFloat_co" in function "einsum"' then
-        return false
-    elseif diagnostic.message == 'No overloads for "einsum" match the provided arguments' then
-        return false
-    elseif diagnostic.message == 'Cannot access member "bm_props" for type "Scene"     Member "bm_props" is unknown' then
-        return false
-    end
+    -- if diagnostic.message == 'Call expression not allowed in type expression' then
+    --     return false
+    -- end
 
     if string.match(diagnostic.message, '"_.+" is not accessed') then
         return false
@@ -137,7 +131,44 @@ end
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     Custom_on_publish_diagnostics, {})
 
-lspconfig.clangd.setup {}
+lspconfig.clangd.setup {
+    keys = {
+        { "<leader>o", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
+    },
+    root_dir = function(fname)
+        return require("lspconfig.util").root_pattern(
+            "Makefile",
+            "configure.ac",
+            "configure.in",
+            "config.h.in",
+            "meson.build",
+            "meson_options.txt",
+            "build.ninja"
+        )(fname) or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(
+            fname
+        ) or require("lspconfig.util").find_git_ancestor(fname)
+    end,
+    capabilities = {
+        offsetEncoding = { "utf-16" },
+    },
+    cmd = {
+        "clangd",
+        "--enable-config",
+        "--background-index",
+        "--clang-tidy",
+        -- "-Wall",
+        "--header-insertion=never",
+        "--completion-style=detailed",
+        -- "--function-arg-placeholders",
+        -- "-j4",
+        -- "--fallback-style=llvm",
+    },
+    init_options = {
+        usePlaceholders = true,
+        completeUnimported = true,
+        clangdFileStatus = true,
+    },
+}
 
 lspconfig.pylsp.setup {
     settings = {
@@ -145,7 +176,7 @@ lspconfig.pylsp.setup {
             plugins = {
                 autopep8 = {
                     enabled = true,
-                    ignore = { 'F722', 'W503' },
+                    -- ignore = { 'F722', 'W503' },
                 },
                 pycodestyle = {
                     enabled = false,
@@ -157,7 +188,7 @@ lspconfig.pylsp.setup {
                 },
                 flake8 = {
                     enabled = true,
-                    ignore = { 'F722', 'W503' },
+                    -- ignore = { 'F722', 'W503' },
                 }
             }
         }
@@ -204,6 +235,8 @@ lspconfig.gopls.setup({
         },
     },
 })
+
+lspconfig.emmet_ls.setup({})
 
 if not lspconfigs.golangcilsp then
     lspconfigs.golangcilsp = {
