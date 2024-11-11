@@ -39,4 +39,4 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 vim.keymap.set("n", "<leader><leader>", "<cmd>source<CR>")
 
 -- invoke lazygit
-vim.keymap.set("n", "lg", "<cmd>LazyGit<CR>", { silent = true })
+vim.keymap.set("n", "gl", "<cmd>LazyGit<CR>", { silent = true })
