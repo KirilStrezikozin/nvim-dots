@@ -40,3 +40,6 @@ vim.keymap.set("n", "<leader><leader>", "<cmd>source<CR>")
 
 -- invoke lazygit
 vim.keymap.set("n", "gl", "<cmd>LazyGit<CR>", { silent = true })
+
+-- toggle word wrapping
+vim.keymap.set("n", "<leader>w", "<cmd>:set wrap!<CR>")
