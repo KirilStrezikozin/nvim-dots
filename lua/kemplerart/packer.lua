@@ -69,6 +69,8 @@ return packer.startup(function(use)
         end,
     })
 
+    use('lervag/vimtex')
+
     -- use({
     --     'HallerPatrick/py_lsp.nvim',
     --     -- Support for versioning
