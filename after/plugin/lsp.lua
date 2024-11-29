@@ -162,6 +162,7 @@ lspconfig.clangd.setup {
         -- "--function-arg-placeholders",
         -- "-j4",
         -- "--fallback-style=llvm",
+        "--query-driver=/usr/bin/arm-none-eabi-g*"
     },
     init_options = {
         usePlaceholders = true,
@@ -252,6 +253,9 @@ end
 lspconfig.golangci_lint_ls.setup {
     filetypes = { 'go', 'gomod' }
 }
+
+
+lspconfig.cmake.setup {}
 
 lsp.on_attach(function(_, bufnr)
     local opts = { buffer = bufnr, remap = false }
