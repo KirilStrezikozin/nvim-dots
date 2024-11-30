@@ -256,6 +256,7 @@ lspconfig.golangci_lint_ls.setup {
 
 
 lspconfig.cmake.setup {}
+lspconfig.texlab.setup({})
 
 lsp.on_attach(function(_, bufnr)
     local opts = { buffer = bufnr, remap = false }
