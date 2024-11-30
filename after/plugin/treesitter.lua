@@ -18,6 +18,8 @@ require 'nvim-treesitter.configs'.setup {
 
     },
 
+    ignore_install = { "latex" },
+
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
 
@@ -34,7 +36,7 @@ require 'nvim-treesitter.configs'.setup {
 
         -- Disable Tree-sitter syntax highlighting for LaTeX buffers.
         -- See :h vimtex-faq-treesitter
-        disable = {"latex"},
+        disable = { "latex" },
 
         -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
         -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -42,4 +44,5 @@ require 'nvim-treesitter.configs'.setup {
         -- Instead of true it can also be a list of languages
         additional_vim_regex_highlighting = false,
     },
+
 }
