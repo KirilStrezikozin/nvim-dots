@@ -3,14 +3,19 @@ lsp.preset('recommended')
 
 require("mason").setup()
 require("mason-lspconfig").setup {
+    automatic_enable = {},
     ensure_installed = {
-        "lua_ls",
+        -- "lua_ls",
         "ts_ls",
         "pylsp",
         "pyright",
         "rust_analyzer",
         "clangd",
         "gopls",
+        "zls",
+        "nil_ls",
+        "yamlls",
+        -- "texlab",
     },
 }
 
@@ -35,7 +40,7 @@ lsp.set_preferences({
     }
 })
 
-lsp.setup()
+-- lsp.setup()
 
 local cmp = require("cmp")
 local cmp_select = { behavior = cmp.SelectBehavior.Select }
@@ -131,6 +136,19 @@ end
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     Custom_on_publish_diagnostics, {})
 
+local function get_query_driver_paths()
+    -- Use `vim.fn.exepath` to resolve paths dynamically
+    local gcc_path = vim.fn.exepath("gcc") or ""
+    local arm_gcc_path = vim.fn.exepath("arm-none-eabi-gcc") or ""
+
+    if arm_gcc_path ~= "" then
+        return arm_gcc_path:gsub("gcc", "g*")
+    end
+    if gcc_path ~= "" then
+        return gcc_path:gsub("gcc", "g*")
+    end
+end
+
 lspconfig.clangd.setup {
     keys = {
         { "<leader>o", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
@@ -151,6 +169,9 @@ lspconfig.clangd.setup {
     capabilities = {
         offsetEncoding = { "utf-16" },
     },
+    filetypes = {
+        "c", "cpp"
+    },
     cmd = {
         "clangd",
         "--enable-config",
@@ -162,7 +183,12 @@ lspconfig.clangd.setup {
         -- "--function-arg-placeholders",
         -- "-j4",
         -- "--fallback-style=llvm",
-        "--query-driver=/usr/bin/arm-none-eabi-g*"
+        -- "--query-driver=/usr/bin/arm-none-eabi-g*",
+        -- "--query-driver=/nix/store/4apajimszc47rxwcpvc3g3rj2icinl71-gcc-wrapper-13.3.0/bin/gcc",
+        -- "--query-driver=/nix/store/51y6wnr0zbz8ps6m6iliywha4q11v98q-gcc-arm-embedded-12.3.rel1/bin/arm-none-eabi-g*",
+        "--query-driver=" .. get_query_driver_paths(),
+        -- "--query-driver=/nix/store/4apajimszc47rxwcpvc3g3rj2icinl71-gcc-wrapper-13.3.0/bin/g++",
+        -- "--query-driver=/nix/store/h5h5ppbyvs1w1fdjz8mywphkpx3cf2n2-gcc-arm-embedded-12.3.rel1/bin/arm-none-eabi-gcc",
     },
     init_options = {
         usePlaceholders = true,
@@ -237,26 +263,102 @@ lspconfig.gopls.setup({
     },
 })
 
-lspconfig.emmet_ls.setup({})
-
-if not lspconfigs.golangcilsp then
-    lspconfigs.golangcilsp = {
-        default_config = {
-            cmd = { 'golangci-lint-langserver' },
-            root_dir = lspconfig.util.root_pattern('.git', 'go.mod'),
-            init_options = {
-                command = { "golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1" },
-            }
+lspconfig.emmet_ls.setup({
+    default_config = {
+        cmd = { 'emmet-ls', '--stdio' },
+        filetypes = {
+            'astro',
+            'css',
+            'eruby',
+            'html',
+            'htmldjango',
+            'javascriptreact',
+            'less',
+            'pug',
+            'sass',
+            'scss',
+            'svelte',
+            'typescriptreact',
+            'vue',
+            'htmlangular',
         },
-    }
-end
+        root_dir = function(fname)
+            return vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
+        end,
+        single_file_support = true,
+    },
+    docs = {
+        description = [[
+https://github.com/aca/emmet-ls
+
+Package can be installed via `npm`:
+```sh
+npm install -g emmet-ls
+```
+]],
+    },
+})
+
+-- Idk this stopped working.
+-- if not lspconfigs.golangcilsp then
+--     lspconfigs.golangcilsp = {
+--         default_config = {
+--             cmd = { 'golangci-lint-langserver' },
+--             root_dir = lspconfig.util.root_pattern('.git', 'go.mod'),
+--             init_options = {
+--                 command = { "golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1" },
+--             }
+--         },
+--     }
+-- end
+
 lspconfig.golangci_lint_ls.setup {
-    filetypes = { 'go', 'gomod' }
+    filetypes = { 'go', 'gomod' },
+    cmd = { "golangci-lint-langserver" },
+    init_options = {
+        command = {
+            "golangci-lint",
+            "run",
+            "--out-format", "json",
+            "--issues-exit-code=1",
+        },
+    },
 }
 
+lspconfig.ts_ls.setup {
+    filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+    cmd = { "typescript-language-server", "--stdio" }
+}
+
+-- lspconfig.eslint.setup({
+--     settings = {
+--         packageManager = 'npm'
+--     },
+--     on_attach = function(client, bufnr)
+--         vim.api.nvim_create_autocmd("BufWritePre", {
+--             buffer = bufnr,
+--             command = "EslintFixAll",
+--         })
+--     end,
+-- })
+
+lspconfig.eslint.setup {}
 
 lspconfig.cmake.setup {}
 lspconfig.texlab.setup({})
+lspconfig.zls.setup({})
+lspconfig.nil_ls.setup({})
+lspconfig.bashls.setup({})
+lspconfig.yamlls.setup({})
+lspconfig.jsonnet_ls.setup({})
+
+lspconfig.tinymist.setup {
+    settings = {
+        formatterMode = "typstyle",
+        exportPdf = "onType",
+        semanticTokens = "disable"
+    }
+}
 
 lsp.on_attach(function(_, bufnr)
     local opts = { buffer = bufnr, remap = false }
