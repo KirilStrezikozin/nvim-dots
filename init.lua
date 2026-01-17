@@ -95,3 +95,36 @@ end
 
 vim.api.nvim_create_user_command("ToggleFloatingTerminal", toggle_terminal, {})
 vim.keymap.set({ "n", "t" }, "<C-h>", toggle_terminal, { desc = "[T]oggle Floating Terminal" })
+
+-- Toggle highlights
+local ns = vim.api.nvim_create_namespace("toggle_selection_highlight")
+local active = false
+
+function ToggleSelectionHighlight()
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos   = vim.fn.getpos("'>")
+
+  -- If no visual selection, do nothing
+  if start_pos[2] == 0 or end_pos[2] == 0 then return end
+
+  -- Clear previous highlight if active
+  if active then
+    vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+    active = false
+    return
+  end
+
+  -- Highlight the full range
+  vim.highlight.range(
+    0,                                      -- current buffer
+    ns,                                     -- namespace
+    "Visual",                               -- highlight group
+    { start_pos[2] - 1, start_pos[3] - 1 }, -- start [line, col]
+    { end_pos[2] - 1, end_pos[3] },         -- end [line, col]
+    { inclusive = true }                    -- include end column
+  )
+
+  active = true
+end
+
+vim.api.nvim_set_keymap('v', '<leader>h', ':lua ToggleSelectionHighlight()<CR>', { noremap = true, silent = true })
