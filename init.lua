@@ -16,12 +16,14 @@ vim.o.spell = true
 vim.o.tabstop = 4
 vim.o.undofile = true
 vim.o.wrap = false
-vim.o.autochdir = true
+-- vim.o.autochdir = true
 
 vim.keymap.set("n", "<leader>x", ":.lua<CR>")
 vim.keymap.set("v", "<leader>x", ":lua<CR>")
 
 vim.keymap.set("n", "yp", "yyp")
+
+vim.keymap.set("n", "<C-b>", "<C-a>", { noremap = true, silent = true })
 
 -- vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
