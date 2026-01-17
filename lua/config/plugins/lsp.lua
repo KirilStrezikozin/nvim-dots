@@ -1,6 +1,9 @@
 -- https://github.com/neovim/nvim-lspconfig
 return {
   {
+    'mikebentley15/vim-pio', -- Syntax highlighting for PIO files.
+  },
+  {
     'saghen/blink.cmp',
     version = '1.*',
     opts = {
@@ -55,6 +58,47 @@ return {
         capabilities = capabilities,
       })
 
+      lspconfig.gopls.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.templ.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.htmx.setup({
+        capabilities = capabilities,
+        filetypes = { "html", "templ" },
+      })
+
+      lspconfig.golangci_lint_ls.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.astro.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.eslint.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.ruff.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.pyright.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.csharp_ls.setup({
+        capabilities = capabilities,
+      })
+
+      lspconfig.terraform_lsp.setup({
+        capabilities = capabilities,
+      })
+
       lspconfig.nixd.setup({
         capabilities = capabilities,
         settings = {
@@ -65,6 +109,10 @@ return {
             },
           },
         },
+      })
+
+      lspconfig.ts_ls.setup({
+        capabilities = capabilities,
       })
 
       -- Prior to nvim 0.11 (where they are the defaults)
@@ -109,6 +157,27 @@ return {
         end)
       end
 
+      local function format_with_prettierd(buf)
+        local filename = vim.api.nvim_buf_get_name(buf)
+        local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+        local input = table.concat(lines, "\n")
+
+        -- Pass buffer content via stdin to prettierd
+        local output = vim.fn.system(
+          { "prettierd", "--stdin-filepath", filename },
+          input
+        )
+
+        if vim.v.shell_error ~= 0 then
+          vim.notify("prettierd failed:\n" .. output, vim.log.levels.ERROR)
+          return
+        end
+
+        -- Replace entire buffer with prettified output
+        local new_lines = vim.split(output, "\n", { plain = true })
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, new_lines)
+      end
+
       local lsp_keymaps = function(buf)
         local map = function(mode, keys, func, desc)
           vim.keymap.set(mode, keys, func, { buffer = buf, desc = "LSP: " .. desc })
@@ -138,6 +207,7 @@ return {
           if not client then return end
 
           local buf = args.buf
+          local filetype = vim.bo.filetype
 
           -- In case Telescope is not installed, default LSP keymaps remain.
           pcall(lsp_keymaps, buf)
@@ -147,7 +217,7 @@ return {
           -- the current buffer, if it is a *.nix file. Note that `nix fmt`
           -- evaluates and parses *.nix files, which is much slower than just
           -- running a formatter directly.
-          if vim.bo.filetype == "nix" then
+          if filetype == "nix" then
             vim.api.nvim_buf_create_user_command(
               buf, "NixFormat", function() call_nix_fmt(buf) end,
               { desc = "Run nix fmt on the current file" })
@@ -158,7 +228,26 @@ return {
             vim.api.nvim_create_autocmd("BufWritePre", {
               buffer = buf,
               callback = function()
-                vim.lsp.buf.format({ bufnr = buf, id = client.id })
+                local prettier_filetypes = {
+                  javascript = true,
+                  typescript = true,
+                  javascriptreact = true,
+                  typescriptreact = true,
+                  json = true,
+                  yaml = true,
+                  html = true,
+                  css = true,
+                  scss = true,
+                  markdown = true,
+                  graphql = true,
+                }
+
+                if prettier_filetypes[filetype] and vim.fn.executable("prettierd") == 1 then
+                  format_with_prettierd(buf)
+                else
+                  -- Use LSP formatting if not handled by prettier
+                  vim.lsp.buf.format({ bufnr = buf, id = client.id })
+                end
               end,
             })
           end
