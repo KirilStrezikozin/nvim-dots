@@ -9,6 +9,7 @@ require 'nvim-treesitter.configs'.setup {
         "rust",
         "lua",
         "go",
+        "zig",
 
         "vimdoc",
         "luadoc",

@@ -344,7 +344,7 @@ lspconfig.ts_ls.setup {
 
 lspconfig.eslint.setup {}
 
-lspconfig.cmake.setup {}
+lspconfig.cmake.setup({})
 lspconfig.texlab.setup({})
 lspconfig.zls.setup({})
 lspconfig.nil_ls.setup({})
