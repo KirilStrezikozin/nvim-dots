@@ -223,30 +223,45 @@ return {
               { desc = "Run nix fmt on the current file" })
           end
 
+          local prettier_filetypes = {
+            javascript = true,
+            typescript = true,
+            javascriptreact = true,
+            typescriptreact = true,
+            json = true,
+            yaml = true,
+            html = true,
+            css = true,
+            scss = true,
+            markdown = true,
+            graphql = true,
+          }
+
           if client.supports_method("textDocument/formatting", nil) then
             -- Format the current buffer on save.
             vim.api.nvim_create_autocmd("BufWritePre", {
               buffer = buf,
               callback = function()
-                local prettier_filetypes = {
-                  javascript = true,
-                  typescript = true,
-                  javascriptreact = true,
-                  typescriptreact = true,
-                  json = true,
-                  yaml = true,
-                  html = true,
-                  css = true,
-                  scss = true,
-                  markdown = true,
-                  graphql = true,
-                }
-
                 if prettier_filetypes[filetype] and vim.fn.executable("prettierd") == 1 then
                   format_with_prettierd(buf)
                 else
                   -- Use LSP formatting if not handled by prettier
                   vim.lsp.buf.format({ bufnr = buf, id = client.id })
+                end
+              end,
+            })
+          else
+            -- Notify if no formatter is available
+            vim.api.nvim_create_autocmd("BufWritePre", {
+              buffer = buf,
+              callback = function()
+                if prettier_filetypes[filetype] and vim.fn.executable("prettierd") == 1 then
+                  format_with_prettierd(buf)
+                else
+                  vim.notify(
+                    "No formatter available for " .. filetype,
+                    vim.log.levels.WARN
+                  )
                 end
               end,
             })
