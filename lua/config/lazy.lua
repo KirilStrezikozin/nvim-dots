@@ -23,7 +23,15 @@ require("lazy").setup({
   spec = {
     {
       "folke/tokyonight.nvim",
-      config = function()
+      opts = {
+        transparent = true,
+        styles = {
+          floats = "transparent",
+          sidebars = "transparent",
+        },
+      },
+      config = function(_, opts)
+        require("tokyonight").setup(opts)
         vim.cmd.colorscheme "tokyonight-night"
       end,
     },
