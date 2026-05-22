@@ -25,6 +25,13 @@ vim.keymap.set("n", "yp", "yyp")
 
 vim.keymap.set("n", "<C-b>", "<C-a>", { noremap = true, silent = true })
 
+-- vim.keymap.set("n", "<leader>fp", ":let @+ = expand('%:p')<CR>", { desc = "Copy current file path to clipboard" })
+vim.keymap.set("n", "<leader>fp", function()
+  local file_path = vim.fn.expand("%:p")
+  vim.fn.setreg("+", file_path)
+  vim.notify("Copied file path to clipboard: " .. file_path, vim.log.levels.INFO)
+end, { desc = "Copy current file path to clipboard" })
+
 -- vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
