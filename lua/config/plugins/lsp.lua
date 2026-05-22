@@ -26,6 +26,24 @@ return {
   {
     "neovim/nvim-lspconfig",
     config = function()
+      require("blink.cmp").setup {
+        sources = {
+          default = {
+            "jupynium",
+            -- ...
+          },
+          providers = {
+            jupynium = {
+              name = "Jupynium",
+              module = "jupynium.blink_cmp",
+              -- Consider higher priority than LSP
+              score_offset = 100,
+            },
+            -- ...
+          },
+        },
+      }
+
       local capabilities = require("blink.cmp").get_lsp_capabilities()
 
       local lspconfig = require("lspconfig")
@@ -283,6 +301,20 @@ return {
           border = border,
         }
       )
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "BlinkCmpMenuOpen",
+        callback = function()
+          vim.b.copilot_suggestion_hidden = true
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "BlinkCmpMenuClose",
+        callback = function()
+          vim.b.copilot_suggestion_hidden = false
+        end,
+      })
     end,
   },
 }
