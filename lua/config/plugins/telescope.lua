@@ -47,6 +47,7 @@ return {
         'node_modules/',
         '.ruff_cache/',
         '.direnv/',
+        '.venv/',
         '*/**/__pycache__',
       }
 
