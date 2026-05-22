@@ -1,9 +1,17 @@
 return {
   {
-    'github/copilot.vim',
+    'zbirenbaum/copilot.lua',
     config = function()
-      vim.g.copilot_no_tab_map = true
-      vim.keymap.set("i", "<C-;>", 'copilot#Accept("<CR>")', { silent = true, expr = true, replace_keycodes = false })
+      require("copilot").setup({
+        suggestion = {
+          keymap = {
+            accept = "<M-a>",
+            next = "<M-l>",
+            prev = "<M-h>",
+            dismiss = "<M-q>",
+          },
+        },
+      })
     end,
   }
 }
