@@ -35,7 +35,7 @@ return {
           notification_history = "%FT%T"
         },
         timeout = 5000,
-        top_down = false,
+        top_down = true,
       })
 
       require("noice").setup({
@@ -97,6 +97,9 @@ return {
           },
         },
       })
+
+
+      vim.keymap.set("n", "<leader>dn", ":Noice dismiss<CR>", { desc = "[D]ismiss all [N]oice messages" })
     end
   }
 }
