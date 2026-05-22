@@ -16,6 +16,7 @@ return {
       {
         'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font
       },
+      { 'KirilStrezikozin/telescope-py-super-types.nvim' },
     },
     config = function()
       require('telescope').setup({
@@ -23,11 +24,19 @@ return {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          py_super_types = {
+            style = "flatten",
+          },
         },
       })
 
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require("telescope").load_extension, "py_super_types")
+
+      vim.keymap.set("n", "<leader>st", function()
+        require("telescope").extensions.py_super_types.py_super_types()
+      end, { desc = "Search [S]uper [T]ypes" })
 
       local pickers = require('telescope.pickers')
       local finders = require('telescope.finders')
