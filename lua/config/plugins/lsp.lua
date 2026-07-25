@@ -46,10 +46,11 @@ return {
 
       local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-      local lspconfig = require("lspconfig")
-
-      lspconfig.lua_ls.setup({
+      vim.lsp.config("*", {
         capabilities = capabilities,
+      })
+
+      vim.lsp.config("lua_ls", {
         settings = {
           Lua = {
             workspace = {
@@ -59,8 +60,7 @@ return {
         },
       })
 
-      lspconfig.tinymist.setup({
-        capabilities = capabilities,
+      vim.lsp.config("tinymist", {
         settings = {
           formatterMode = "typstyle",
           exportPdf = "onType",
@@ -68,57 +68,11 @@ return {
         },
       })
 
-      lspconfig.clangd.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.cmake.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.gopls.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.templ.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.htmx.setup({
-        capabilities = capabilities,
+      vim.lsp.config("htmx", {
         filetypes = { "html", "templ" },
       })
 
-      lspconfig.golangci_lint_ls.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.astro.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.eslint.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.ruff.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.pyright.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.csharp_ls.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.terraform_lsp.setup({
-        capabilities = capabilities,
-      })
-
-      lspconfig.nixd.setup({
-        capabilities = capabilities,
+      vim.lsp.config("nixd", {
         settings = {
           nixd = {
             formatting = {
@@ -129,8 +83,24 @@ return {
         },
       })
 
-      lspconfig.ts_ls.setup({
-        capabilities = capabilities,
+      vim.lsp.enable({
+        "lua_ls",
+        "tinymist",
+        "clangd",
+        "cmake",
+        "gopls",
+        "templ",
+        "htmx",
+        "golangci_lint_ls",
+        "astro",
+        "eslint",
+        "ruff",
+        "pyright",
+        "csharp_ls",
+        "terraform_lsp",
+        "nixd",
+        "ts_ls",
+        "marksman",
       })
 
       -- Prior to nvim 0.11 (where they are the defaults)
@@ -255,7 +225,7 @@ return {
             graphql = true,
           }
 
-          if client.supports_method("textDocument/formatting", nil) then
+          if client:supports_method("textDocument/formatting") then
             -- Format the current buffer on save.
             vim.api.nvim_create_autocmd("BufWritePre", {
               buffer = buf,
@@ -287,20 +257,7 @@ return {
         end,
       })
 
-      local border = "rounded"
-
-      -- Prior to nvim 0.11
-      vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
-        vim.lsp.handlers.hover, {
-          border = border,
-        }
-      )
-
-      vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
-        vim.lsp.handlers.signature_help, {
-          border = border,
-        }
-      )
+      vim.o.winborder = "rounded"
 
       vim.api.nvim_create_autocmd("User", {
         pattern = "BlinkCmpMenuOpen",
